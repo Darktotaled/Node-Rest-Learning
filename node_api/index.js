@@ -3,6 +3,8 @@ const app = express();
 const port = 3000;
 const mongoose = require('mongoose');
 const mongoDB = 'mongodb://localhost:27017/dog_api';
+const cors = require('cors');
+const router = require('./routes/pets')
 
 async function connectDb(){
     try {
@@ -24,40 +26,8 @@ const dogSchema = new mongoose.Schema({
 let bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-const dogs =[
-    {name:'Jimbob',breed: "husky"},
-    {name:'Sam',breed: 'Lab'}
-]
-
-app.get("/dogs",async (req, res)=>{
-    const response = await Dog.find({}).lean()
-    console.log(response)
-    res.status(200).send(response)
-
-})
-
-app.get("/dogs/:id",(req, res) =>{
-    Dog.findById(req.params.id,(err,dog)=>{
-
-        res.json(dogs)
-    })
-})
-
-app.post("/dogs",async (req, res)=>{
-    const response = await new Dog(req.body).save()
-    res.status(200).send(response)
-})
-
-app.put("/dogs/:id",(req, res)=>{
-    console.log(req.params.id)
-    res.json({message:`updating dog ${req.params.id}`})
-})
-
-app.delete("/dogs/:id",(req, res)=>{
-    console.log(req.params.id)
-    res.json({message:`deleting dog ${req.params.id}`})
-})
+app.use(cors);
+app.use(router);
 
 app.listen(port, () => {
     console.log(`listening on port ${port}`);})
